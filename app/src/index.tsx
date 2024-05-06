@@ -6,7 +6,6 @@ import reportWebVitals from './reportWebVitals';
 import {
   createBrowserRouter,
   RouterProvider,
-  redirect
 } from "react-router-dom";
 import Auth from './auth/Auth';
 import HuggingFace from './huggingface/HuggingFace';

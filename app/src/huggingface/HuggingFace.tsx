@@ -1,13 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import classNames from 'classnames';
 import Skeletons from '../components/Skeletons';
+import { redirect, useNavigate } from 'react-router-dom';
 
 function HuggingFace() {
+    const navigate = useNavigate();
     const [activeTab, setActiveTab] = useState("sentiments");
     const [sentiments, setSentiments] = useState([]);
     const [emotions, setEmotions] = useState([]);
-    const [loadingSentiments, setLoadingSentiments] = useState(false);
-    const [loadingEmotions, setLoadingEmotions] = useState(false);
+    const [loadingSentiments, setLoadingSentiments] = useState(true);
+    const [loadingEmotions, setLoadingEmotions] = useState(true);
 
     const SENTIMENTS: { [key: string]: string } = {
         NEG: "Negative",
@@ -17,38 +19,58 @@ function HuggingFace() {
 
     const changeActiveTab = (tab: string) => {
         setActiveTab(tab)
+        if (tab === "sentiments") {
+            fetchSentimets();
+        } else {
+            fetchEmotions();
+        }
+    }
+
+    async function fetchSentimets() {
+        if (sentiments?.length !== 0) return;
+        try {
+            const response = await (await fetch("http://localhost:8000/huggingface/sentiments/", {
+                method: "GET",
+                headers: {
+                    "Authorization": `Bearer ${localStorage.getItem("token")}`
+                }
+            })).json();
+            if (response?.code === "token_not_valid") {
+                alert("Session expired");
+                navigate("/auth")
+            }
+            setSentiments(response.data);
+            setLoadingSentiments(false);
+        } catch (error: any) {
+            navigate("/auth")
+        }
+    }
+    async function fetchEmotions() {
+        if (emotions?.length !== 0) return;
+        try {
+            const response = await (await fetch("http://localhost:8000/huggingface/emotions/", {
+                method: "GET",
+                headers: {
+                    "Authorization": `Bearer ${localStorage.getItem("token")}`
+                }
+            })).json();
+            if (response?.code === "token_not_valid") {
+                alert("Session expired");
+                navigate("/auth")
+            }
+            setEmotions(response.data);
+            setLoadingEmotions(false);
+        } catch (error: any) {
+            navigate("/auth")
+        }
     }
 
     useEffect(() => {
-        async function fetchSentimets() {
-            try {
-                const response = await (await fetch("http://localhost:8000/huggingface/sentiments/", {
-                    method: "GET",
-                    headers: {
-                        "Authorization": `Bearer ${localStorage.getItem("token")}`
-                    }
-                })).json();
-                console.log(response.data)
-                setSentiments(response.data);
-            } catch (error) {
-                console.log("Error loading sentiments", error)
-            }
+        if (activeTab === "sentiments") {
+            fetchSentimets();
+        } else {
+            fetchEmotions();
         }
-        async function fetchEmotions() {
-            try {
-                const response = await (await fetch("http://localhost:8000/huggingface/emotions/", {
-                    method: "GET",
-                    headers: {
-                        "Authorization": `Bearer ${localStorage.getItem("token")}`
-                    }
-                })).json();
-                setEmotions(response.data);
-            } catch (error) {
-                console.log("Error loading emotions", error)
-            }
-        }
-        fetchSentimets();
-        fetchEmotions()
     }, [])
 
     return (
@@ -120,6 +142,11 @@ function HuggingFace() {
                         );
                     })
                 )
+            }
+            {
+                ((activeTab === "sentiments" && loadingSentiments ) ||
+                (activeTab === "emotions" && loadingEmotions)) &&
+                <Skeletons amount={3} />
             }
             {
                 activeTab === "emotions" && emotions?.length > 0 &&
