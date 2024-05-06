@@ -1,0 +1,37 @@
+@baseUrl = http://localhost:8000
+
+POST {{baseUrl}}/auth/login/
+Content-Type: application/json
+
+{
+    "username": "admin",
+    "password": "administrador"
+}
+
+###
+POST {{baseUrl}}/auth/register/
+Content-Type: application/json
+
+{
+    "username": "newuser",
+    "email": "newemail@example.com",
+    "password": "newpassword1234",
+    "password2": "newpassword1234",
+    "first_name": "new",
+    "last_name": "user"
+}
+
+###
+GET {{baseUrl}}/huggingface/
+
+###
+POST {{baseUrl}}/huggingface/
+Content-Type: application/json
+
+{}
+
+###
+GET {{baseUrl}}/huggingface/emotions
+
+###
+GET {{baseUrl}}/huggingface/sentiments
