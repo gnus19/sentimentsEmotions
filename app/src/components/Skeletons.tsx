@@ -4,7 +4,7 @@ function Skeletons({ amount }: { amount: number }) {
     let skeletons = []
     for (let index = 0; index < amount; index++) {
         skeletons.push(
-            <div className="border mb-2 border-blue-300 shadow rounded-md p-4 w-full mx-auto">
+            <div key={`skeleton-${index}`} className="border mb-2 border-blue-300 shadow rounded-md p-4 w-full mx-auto">
                 <div className="animate-pulse flex space-x-4">
                     <div className="flex-1 space-y-6 py-1">
                     <div className="h-2 bg-slate-700 rounded"></div>

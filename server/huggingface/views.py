@@ -42,12 +42,16 @@ def healthy(request):
 @api_view(['GET'])   
 def emotions(request):
     page = request.GET.get('page', 1)
-    df = pd.read_csv('DataRedesSociales.csv', usecols=['text'], nrows=5, skiprows=(5*(page-1)))
+    df = pd.read_csv('DataRedesSociales.csv', usecols=['text', 'likes', 'comments', 'shares', 'reactions_count'], nrows=5, skiprows=(5*(page-1)))
     output = []
     for x in range(len(df.index)):
         output.append(
             {
                 "text": df.iloc[x].values[0],
+                "likes": int(df.iloc[x].values[1]),
+                "comments": int(df.iloc[x].values[2]),
+                "shares": int(df.iloc[x].values[3]),
+                "reactions_count": int(df.iloc[x].values[4]),
                 "result": emotionQuery(
                     { "inputs": df.iloc[x].values[0] }
                 )
@@ -61,12 +65,16 @@ def emotions(request):
 @api_view(['GET'])
 def sentiments(request):
     page = request.GET.get('page', 1)
-    df = pd.read_csv('DataRedesSociales.csv', usecols=['text'], nrows=5, skiprows=(5*(page-1)))
+    df = pd.read_csv('DataRedesSociales.csv', usecols=['text', 'likes', 'comments', 'shares', 'reactions_count'], nrows=5, skiprows=(5*(page-1)))
     output = []
     for x in range(len(df.index)):
         output.append(
             {
                 "text": df.iloc[x].values[0],
+                "likes": int(df.iloc[x].values[1]),
+                "comments": int(df.iloc[x].values[2]),
+                "shares": int(df.iloc[x].values[3]),
+                "reactions_count": int(df.iloc[x].values[4]),
                 "result": sentimentQuery(
                     { "inputs": df.iloc[x].values[0] }
                 )
